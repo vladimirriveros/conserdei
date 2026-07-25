@@ -1,0 +1,118 @@
+
+Table sucursales {
+  id int [pk, increment]
+  direccion varchar(255)
+  telefono varchar(20)
+  activa boolean [default: true]
+}
+
+Table Categorias {
+  id int [pk, increment]
+  nombre varchar(100) [not null]
+  descripcion text
+}
+
+Table Productos {
+  id int [pk, increment]
+  categoria_id int [ref: > Categorias.id]
+
+  codigo varchar(50) [not null, unique]
+  nombre varchar(100) [not null]
+  descripcion text
+  imagen varchar(255)
+  precio_compra decimal(10,2) [not null]
+  precio_venta decimal(10,2) [not null]
+  stock_minimo int [not null, default: 0]
+  stock_maximo int [not null, default: 0]
+  unidad_medida varchar(50)
+  estado boolean [default: true]
+}
+
+Table Proveedores {
+  id int [pk, increment]
+  empresa varchar(100)
+  direccion varchar(255)
+  nombre varchar(100) [not null]
+  telefono varchar(20)
+  email varchar(100)
+}
+
+Table Lotes {
+  id int [pk, increment]
+
+  codigo_lote varchar(50) [not null]
+  fecha_entrada date
+  fecha_vencimiento date
+  cantidad_inicial int [not null]
+  cantidad_actual int [not null]
+  precio_compra decimal(10,2) [null]
+  precio_venta decimal(10,2) [null]
+  estado boolean [default: true]
+}
+
+Table Inventario_Sucursal_Lote {
+  id int [pk, increment]
+  lote_id int [ref: > Lotes.id]
+  sucursal_id int [ref: > sucursales.id]
+  cantidad_en_sucursal int [not null]
+}
+
+Table Movimientos_Inventario {
+  id int [pk, increment]
+  lote_id int [ref: > Lotes.id]
+  sucursal_id int [ref: > sucursales.id]
+
+  tipo_movimiento enum('entrada', 'salida') [not null]
+  cantidad int [not null]
+  fecha timestamp [default: `current_timestamp`]
+  observaciones text
+}
+
+Table Compras {
+  id int [pk, increment]
+  proveedor_id int [ref: > Proveedores.id]
+  usuario_id int [ref: > usuarios.id]
+  fecha_compra date [not null]
+  total decimal(10,2) [not null]
+  estado varchar(50) [default: 'pendiente']
+  observaciones text
+}
+
+Table Detalle_Compras {
+  id int [pk, increment]
+  compra_id int [ref: > Compras.id]
+  producto_id int [ref: > Productos.id]
+  lote_id int [ref: > Lotes.id]
+  cantidad int [not null]
+  precio_unitario decimal(10,2) [not null]
+  subtotal decimal(10,2) [not null]
+}
+
+Table usuarios {
+  id int [pk, increment]
+  nombre varchar(100) [not null]
+  email varchar(100) [not null, unique]
+  password varchar(255) [not null]
+  rol enum('admin', 'vendedor', 'almacenista') [default: 'vendedor']
+  activo boolean [default: true]
+}
+
+Table salidas {
+  id int [pk, increment]
+  usuario_id int [ref: > usuarios.id]
+  sucursal_id int [ref: > sucursales.id]
+  fecha_salida timestamp [default: `current_timestamp`]
+  total decimal(10,2) [not null]
+  estado varchar(50) [default: 'pendiente']
+  observaciones text
+}
+
+Table Detalle_Salidas {
+  id int [pk, increment]
+  lote_id int [ref: > Lotes.id]
+  salida_id int [ref: > salidas.id]
+  cantidad int [not null]
+  precio_unitario decimal(10,2) [not null]
+  subtotal decimal(10,2) [not null]
+}
+
