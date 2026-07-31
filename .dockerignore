@@ -1,0 +1,10 @@
+.git
+.env
+.env.*
+node_modules
+vendor
+storage/logs/*
+public/hot
+public/build
+Dockerfile*
+README.md

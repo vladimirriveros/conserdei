@@ -16,6 +16,7 @@ class RoleSeeder extends Seeder
     {
         $role1 = Role::firstOrCreate(['name' => 'admin']);
         $role2 = Role::firstOrCreate(['name' => 'vendedor']);
+        $guestRole = Role::firstOrCreate(['name' => 'invitado', 'guard_name' => 'web']);
 
         // ── Categorías ───────────────────────────────────────────────────────
         Permission::firstOrCreate(['name' => 'categorias.index', 'guard_name' => 'web'])->syncRoles([$role1]);
@@ -136,5 +137,25 @@ Permission::firstOrCreate(['name' => 'inventario.stock_bajo.pdf', 'guard_name' =
         Permission::firstOrCreate(['name' => 'salidas.edit', 'guard_name' => 'web'])->syncRoles([$role1]);
         Permission::firstOrCreate(['name' => 'salidas.destroy', 'guard_name' => 'web'])->syncRoles([$role1]);
         Permission::firstOrCreate(['name' => 'salidas.finalizarSalida', 'guard_name' => 'web'])->syncRoles([$role1]);
+
+
+        // Permisos de consulta para el portafolio (sin operaciones de escritura).
+        $guestPermissions = Permission::query()
+            ->where('guard_name', 'web')
+            ->where(function ($query) {
+                $query->where('name', 'like', '%.index')
+                    ->orWhere('name', 'like', '%.show')
+                    ->orWhere('name', 'like', '%.pdf')
+                    ->orWhereIn('name', [
+                        'lotes.vencidos',
+                        'lotes.vencidos.sucursal',
+                        'mostrar_inventario_por_sucursal.show',
+                        'inventario.stock_bajo_sucursal',
+                        'movimientos.index',
+                    ]);
+            })
+            ->get();
+
+        $guestRole->syncPermissions($guestPermissions);
     }
 }

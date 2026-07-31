@@ -27,6 +27,7 @@ class DatabaseSeeder extends Seeder
 
         // Crear admin protegido (DEBE ser el primero o al menos antes de asignar roles)
         $this->call(AdminUserSeeder::class);
+        $this->call(GuestUserSeeder::class);
 
         // Resto de tus seeders...
         Proveedor::factory(5)->create();

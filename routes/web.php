@@ -16,6 +16,7 @@ use App\Http\Controllers\SalidaController;
 use App\Http\Controllers\CorreccionCompraController;
 use App\Http\Controllers\AlertasController;
 use App\Http\Controllers\AdminController;
+use App\Http\Controllers\Auth\GuestLoginController;
 // use App\Models\DetalleSalida;
 // use App\Models\Salida;
 use Illuminate\Support\Facades\Auth;
@@ -28,6 +29,7 @@ Route::get('/', function () {
 });
 
 Auth::routes();
+Route::post('/login/invitado', GuestLoginController::class)->name('login.guest');
 
 
 Route::get('/home', [App\Http\Controllers\AdminController::class, 'index'])->name('home')->middleware('auth');
